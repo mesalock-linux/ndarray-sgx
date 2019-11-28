@@ -12,6 +12,7 @@
 
 #![allow(clippy::match_wild_err_arm)]
 
+use std::prelude::v1::*;
 use num_traits::{Float, One, Zero};
 
 use crate::dimension;

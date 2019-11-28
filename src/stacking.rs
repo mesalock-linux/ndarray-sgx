@@ -8,6 +8,7 @@
 
 use crate::error::{from_kind, ErrorKind, ShapeError};
 use crate::imp_prelude::*;
+use std::prelude::v1::*;
 
 /// Stack arrays along the given axis.
 ///

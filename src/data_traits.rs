@@ -13,6 +13,7 @@ use rawpointer::PointerExt;
 use std::mem::{self, size_of};
 use std::ptr::NonNull;
 use std::sync::Arc;
+use std::prelude::v1::*;
 
 use crate::{
     ArrayBase, CowRepr, Dimension, OwnedArcRepr, OwnedRcRepr, OwnedRepr, RawViewRepr, ViewRepr,

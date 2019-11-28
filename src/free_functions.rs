@@ -8,6 +8,7 @@
 
 use std::mem::{forget, size_of};
 use std::slice;
+use std::prelude::v1::*;
 
 use crate::imp_prelude::*;
 use crate::{dimension, ArcArray1, ArcArray2};

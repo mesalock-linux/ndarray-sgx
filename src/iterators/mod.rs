@@ -16,6 +16,7 @@ mod windows;
 use std::iter::FromIterator;
 use std::marker::PhantomData;
 use std::ptr;
+use std::prelude::v1::*;
 
 use crate::Ix1;
 

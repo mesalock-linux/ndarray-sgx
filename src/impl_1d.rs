@@ -8,6 +8,7 @@
 
 //! Methods for one-dimensional arrays.
 use crate::imp_prelude::*;
+use std::prelude::v1::*;
 
 /// # Methods For 1-D Arrays
 impl<A, S> ArrayBase<S, Ix1>

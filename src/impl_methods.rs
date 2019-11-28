@@ -9,6 +9,7 @@
 use std::cmp;
 use std::ptr as std_ptr;
 use std::slice;
+use std::prelude::v1::*;
 
 use rawpointer::PointerExt;
 

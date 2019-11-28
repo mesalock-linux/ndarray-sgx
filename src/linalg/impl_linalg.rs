@@ -12,6 +12,7 @@ use crate::numeric_util;
 use crate::{LinalgScalar, Zip};
 
 use std::any::TypeId;
+use std::prelude::v1::*;
 
 #[cfg(feature = "blas")]
 use std::cmp;

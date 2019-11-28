@@ -1,3 +1,4 @@
+use std::prelude::v1::*;
 use std::ptr::NonNull;
 
 /// Return a NonNull<T> pointer to the vector's data

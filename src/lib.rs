@@ -14,7 +14,10 @@
     clippy::many_single_char_names
 )]
 
-//! The `ndarray` crate provides an *n*-dimensional container for general elements
+#![cfg_attr(all(feature = "mesalock_sgx",
+                not(target_env = "sgx")), no_std)]
+#![cfg_attr(all(target_env = "sgx", target_vendor = "mesalock"), feature(rustc_private))]
+
 //! and for numerics.
 //!
 //! In *n*-dimensional we include for example 1-dimensional rows or columns,
@@ -106,10 +109,17 @@
 //!
 //! If you are looking to generate random arrays instead, check out [`ndarray-rand`](https://crates.io/crates/ndarray-rand).
 
+//! The `ndarray` crate provides an *n*-dimensional container for general elements
 #[cfg(feature = "blas")]
 extern crate blas_src;
 #[cfg(feature = "blas")]
 extern crate cblas_sys;
+
+#[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))]
+#[macro_use]
+extern crate sgx_tstd as std;
+
+use std::prelude::v1::*;
 
 #[cfg(feature = "docs")]
 pub mod doc;

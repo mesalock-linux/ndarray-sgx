@@ -12,6 +12,7 @@ use std::iter::FromIterator;
 use std::iter::IntoIterator;
 use std::mem;
 use std::ops::{Index, IndexMut};
+use std::prelude::v1::*;
 
 use crate::imp_prelude::*;
 use crate::iter::{Iter, IterMut};

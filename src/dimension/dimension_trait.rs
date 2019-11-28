@@ -9,6 +9,7 @@
 use std::fmt::Debug;
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 use std::ops::{Index, IndexMut};
+use std::prelude::v1::*;
 
 use super::axes_of;
 use super::conversion::Convert;
