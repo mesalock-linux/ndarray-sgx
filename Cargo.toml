@@ -73,9 +73,9 @@ serde-1 = ["serde"]
 [profile.bench]
 #debug = true
 
-[workspace]
+#[workspace]
 #members = ["ndarray-rand", "serialization-tests", "blas-tests"]
-exclude = ["numeric-tests"]
+#exclude = ["numeric-tests"]
 
 [package.metadata.release]
 no-dev-version = true
