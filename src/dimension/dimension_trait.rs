@@ -76,7 +76,7 @@ pub trait Dimension:
     /// Next smaller dimension (if applicable)
     type Smaller: Dimension;
     /// Next larger dimension
-    type Larger: Dimension;
+    type Larger: Dimension + RemoveAxis;
 
     /// Returns the number of dimensions (number of axes).
     fn ndim(&self) -> usize;
@@ -228,6 +228,25 @@ pub trait Dimension:
             }
         }
         !end_iteration
+    }
+
+    /// Returns `true` iff `strides1` and `strides2` are equivalent for the
+    /// shape `self`.
+    ///
+    /// The strides are equivalent if, for each axis with length > 1, the
+    /// strides are equal.
+    ///
+    /// Note: Returns `false` if any of the ndims don't match.
+    #[doc(hidden)]
+    fn strides_equivalent<D>(&self, strides1: &Self, strides2: &D) -> bool
+    where
+        D: Dimension,
+    {
+        let shape_ndim = self.ndim();
+        shape_ndim == strides1.ndim()
+            && shape_ndim == strides2.ndim()
+            && izip!(self.slice(), strides1.slice(), strides2.slice())
+                .all(|(&d, &s1, &s2)| d <= 1 || s1 as isize == s2 as isize)
     }
 
     #[doc(hidden)]

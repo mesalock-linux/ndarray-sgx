@@ -6,7 +6,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::cmp;
 use std::ptr as std_ptr;
 use std::slice;
 use std::prelude::v1::*;
@@ -573,6 +572,10 @@ where
     /// Return a reference to the element at `index`.
     ///
     /// **Note:** only unchecked for non-debug builds of ndarray.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that the index is in-bounds.
     #[inline]
     pub unsafe fn uget<I>(&self, index: I) -> &A
     where
@@ -588,8 +591,16 @@ where
     ///
     /// Return a mutable reference to the element at `index`.
     ///
-    /// **Note:** Only unchecked for non-debug builds of ndarray.<br>
-    /// **Note:** (For `ArcArray`) The array must be uniquely held when mutating it.
+    /// **Note:** Only unchecked for non-debug builds of ndarray.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that:
+    ///
+    /// 1. the index is in-bounds and
+    ///
+    /// 2. the data is uniquely held by the array. (This property is guaranteed
+    ///    for `Array` and `ArrayViewMut`, but not for `ArcArray` or `CowArray`.)
     #[inline]
     pub unsafe fn uget_mut<I>(&mut self, index: I) -> &mut A
     where
@@ -623,8 +634,16 @@ where
     ///
     /// Indices may be equal.
     ///
-    /// **Note:** only unchecked for non-debug builds of ndarray.<br>
-    /// **Note:** (For `ArcArray`) The array must be uniquely held.
+    /// **Note:** only unchecked for non-debug builds of ndarray.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that:
+    ///
+    /// 1. both `index1 and `index2` are in-bounds and
+    ///
+    /// 2. the data is uniquely held by the array. (This property is guaranteed
+    ///    for `Array` and `ArrayViewMut`, but not for `ArcArray` or `CowArray`.)
     pub unsafe fn uswap<I>(&mut self, index1: I, index2: I)
     where
         S: DataMut,
@@ -1424,8 +1443,8 @@ where
     }
 
     /// Transform the array into `shape`; any shape with the same number of
-    /// elements is accepted, but the source array or view must be
-    /// contiguous, otherwise we cannot rearrange the dimension.
+    /// elements is accepted, but the source array or view must be in standard
+    /// or column-major (Fortran) layout.
     ///
     /// **Errors** if the shapes don't have the same number of elements.<br>
     /// **Errors** if the input array is not c- or f-contiguous.
@@ -1918,18 +1937,19 @@ where
         F: FnMut(&mut A, &B),
     {
         debug_assert_eq!(self.shape(), rhs.shape());
-        if let Some(self_s) = self.as_slice_mut() {
-            if let Some(rhs_s) = rhs.as_slice() {
-                let len = cmp::min(self_s.len(), rhs_s.len());
-                let s = &mut self_s[..len];
-                let r = &rhs_s[..len];
-                for i in 0..len {
-                    f(&mut s[i], &r[i]);
+
+        if self.dim.strides_equivalent(&self.strides, &rhs.strides) {
+            if let Some(self_s) = self.as_slice_memory_order_mut() {
+                if let Some(rhs_s) = rhs.as_slice_memory_order() {
+                    for (s, r) in self_s.iter_mut().zip(rhs_s) {
+                        f(s, &r);
+                    }
+                    return;
                 }
-                return;
             }
         }
-        // otherwise, fall back to the outer iter
+
+        // Otherwise, fall back to the outer iter
         self.zip_mut_with_by_rows(rhs, f);
     }
 
